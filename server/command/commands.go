@@ -15,6 +15,7 @@ type Register func(*model.Command) error
 // RegisterCommands should be called by the plugin to register all necessary commands
 func RegisterCommands(registerFunc Register) error {
 	registerFunc(&CommandInvite)
+	registerFunc(&CommandHeader)
 
 	return nil
 }
@@ -49,11 +50,14 @@ func (r *Runner) Execute() (*model.CommandResponse, error) {
 
 	split := strings.Fields(r.args.Command)
 	cmd := split[0]
+	cmd = strings.TrimPrefix(cmd, "/")
 
 	var resp *model.CommandResponse
 	switch cmd {
-	case "/invite":
+	case CommandInvite.Trigger:
 		resp = r.Invite()
+	case CommandHeader.Trigger:
+		resp = r.Header()
 	}
 
 	return resp, nil
